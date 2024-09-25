@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -16,10 +17,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Log.d("MainActivity", "onCreate called")
+
         if (isLoggedIn()) {
+            Log.d("MainActivity", "User is logged in")
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         } else {
+            Log.d("MainActivity", "User is not logged in")
             findViewById<Button>(R.id.btnLogin).setOnClickListener {
                 startActivity(Intent(this, LoginActivity::class.java))
             }

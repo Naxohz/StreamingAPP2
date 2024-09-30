@@ -3,27 +3,29 @@ package com.example.streamingapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
-
-// LoginActivity.kt
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var usernameEditText: EditText
+    private lateinit var passwordEditText: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val etUsername = findViewById<EditText>(R.id.etUsername)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        // Inicializar los campos de entrada
+        usernameEditText = findViewById(R.id.etUsername)
+        passwordEditText = findViewById(R.id.etPassword)
 
-        btnLogin.setOnClickListener {
-            val username = etUsername.text.toString()
-            val password = etPassword.text.toString()
-
+        // Configurar el botón de inicio de sesión
+        val loginButton: Button = findViewById(R.id.btnLogin)
+        loginButton.setOnClickListener {
+            val username = usernameEditText.text.toString()
+            val password = passwordEditText.text.toString()
             if (validateCredentials(username, password)) {
                 setLoggedIn(true)
                 startActivity(Intent(this, HomeActivity::class.java))
@@ -47,3 +49,5 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
+
+

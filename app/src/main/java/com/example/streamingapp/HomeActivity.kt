@@ -1,48 +1,107 @@
 package com.example.streamingapp
 
-import android.content.DialogInterface
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        setContent {
+            HomeScreen { category ->
+                Toast.makeText(this, "Seleccionaste: $category", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
 
-        findViewById<TextView>(R.id.tvWelcome).text = "Bienvenidos a la Aplicación Regional"
+@Composable
+fun HomeScreen(onCategorySelected: (String) -> Unit) {
+    var showSportsDialog by remember { mutableStateOf(false) }
+    var showNewsDialog by remember { mutableStateOf(false) }
 
-        findViewById<Button>(R.id.btnSports).setOnClickListener { showSportsCategories() }
-        findViewById<Button>(R.id.btnNews).setOnClickListener { showNewsCategories() }
+    val sportsCategories = listOf("Fútbol", "Atletismo", "Basketball", "Handball", "Tenis")
+    val newsCategories = listOf("Política", "Economía", "Cultura", "Tecnología")
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Bienvenidos a la Aplicación Regional", fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { showSportsDialog = true }) {
+            Text("Deportes")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { showNewsDialog = true }) {
+            Text("Noticias")
+        }
     }
 
-    private fun showSportsCategories() {
-        val sportsCategories = arrayOf("Fútbol", "Atletismo", "Basketball", "Handball", "Tenis")
-        AlertDialog.Builder(this)
-            .setTitle("Deportes en la región")
-            .setItems(sportsCategories) { _, which ->
-                val selectedCategory = sportsCategories[which]
-                // Aquí deberías iniciar una nueva actividad o fragmento para mostrar el contenido de la categoría seleccionada
-                Toast.makeText(this, "Seleccionaste: $selectedCategory", Toast.LENGTH_SHORT).show()
-            }
-            .show()
+    if (showSportsDialog) {
+        CategoryDialog(
+            title = "Deportes en la región",
+            categories = sportsCategories,
+            onDismiss = { showSportsDialog = false },
+            onCategorySelected = onCategorySelected
+        )
     }
 
-    private fun showNewsCategories() {
-        val newsCategories = arrayOf("Política", "Economía", "Cultura", "Tecnología")
-        AlertDialog.Builder(this)
-            .setTitle("Noticias de la Región")
-            .setItems(newsCategories) { _, which ->
-                val selectedCategory = newsCategories[which]
-                // Aquí deberías iniciar una nueva actividad o fragmento para mostrar el contenido de la categoría seleccionada
-                Toast.makeText(this, "Seleccionaste: $selectedCategory", Toast.LENGTH_SHORT).show()
+    if (showNewsDialog) {
+        CategoryDialog(
+            title = "Noticias de la Región",
+            categories = newsCategories,
+            onDismiss = { showNewsDialog = false },
+            onCategorySelected = onCategorySelected
+        )
+    }
+}
+
+@Composable
+fun CategoryDialog(
+    title: String,
+    categories: List<String>,
+    onDismiss: () -> Unit,
+    onCategorySelected: (String) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = title) },
+        text = {
+            Column {
+                categories.forEach { category ->
+                    TextButton(onClick = {
+                        onCategorySelected(category)
+                        onDismiss()
+                    }) {
+                        Text(text = category)
+                    }
+                }
             }
-            .show()
+        },
+        confirmButton = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewHomeScreen() {
+    HomeScreen { category ->
     }
 }

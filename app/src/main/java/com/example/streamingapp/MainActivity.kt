@@ -2,34 +2,33 @@ package com.example.streamingapp
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import com.example.streamingapp.ui.theme.StreamingAPPTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        Log.d("MainActivity", "onCreate called")
-
+        // Verificar si el usuario está logueado
         if (isLoggedIn()) {
-            Log.d("MainActivity", "User is logged in")
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         } else {
-            Log.d("MainActivity", "User is not logged in")
-            findViewById<Button>(R.id.btnLogin).setOnClickListener {
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
-            findViewById<Button>(R.id.btnRegister).setOnClickListener {
-                startActivity(Intent(this, RegisterActivity::class.java))
+            // Si no está logueado, mostrar la pantalla de inicio de sesión y registro
+            setContent {
+                StreamingAPPTheme {
+                    LoginRegisterScreen()
+                }
             }
         }
     }
@@ -39,3 +38,45 @@ class MainActivity : AppCompatActivity() {
         return sharedPref.getBoolean("isLoggedIn", false)
     }
 }
+
+@Composable
+fun LoginRegisterScreen() {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, LoginActivity::class.java))
+            },
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(text = "Iniciar Sesión")
+        }
+
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, RegisterActivity::class.java))
+            },
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(text = "Registrar")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewLoginRegisterScreen() {
+    StreamingAPPTheme {
+        LoginRegisterScreen()
+    }
+}
+

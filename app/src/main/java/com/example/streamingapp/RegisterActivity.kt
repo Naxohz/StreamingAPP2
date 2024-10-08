@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -17,6 +16,7 @@ import com.google.android.gms.location.LocationServices
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var etLocation: EditText  // Declarar el campo de texto para la ubicación
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +32,9 @@ class RegisterActivity : AppCompatActivity() {
         val etConfirmPassword = findViewById<EditText>(R.id.etConfirmPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val btnLocation = findViewById<Button>(R.id.btnLocation)
+
+        // Inicializar el campo de texto de la ubicación
+        etLocation = findViewById(R.id.etLocation)
 
         btnLocation.setOnClickListener { requestLocationPermission() }
 
@@ -66,7 +69,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun registerUser(name: String, lastName: String, username: String, email: String, password: String) {
-        // Aquí deberías implementar la lógica para registrar al usuario en tu base de datos o API
+        // Lógica para registrar al usuario
         Toast.makeText(this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
         setLoggedIn(true)
         startActivity(Intent(this, HomeActivity::class.java))
@@ -89,8 +92,12 @@ class RegisterActivity : AppCompatActivity() {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        // Aquí puedes usar la ubicación (location.latitude, location.longitude)
+                        // Obtener latitud y longitud y mostrarla en el EditText
+                        val locationText = "Latitud: ${location.latitude}, Longitud: ${location.longitude}"
+                        etLocation.setText(locationText)
                         Toast.makeText(this, "Ubicación obtenida", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
                     }
                 }
         }

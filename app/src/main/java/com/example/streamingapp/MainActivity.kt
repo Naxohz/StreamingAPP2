@@ -39,37 +39,50 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginRegisterScreen() {
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, LoginActivity::class.java))
-            },
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(text = "Iniciar Sesión")
-        }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Aplicación Streaming Regional") }
+            )
+        },
+        content = { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp), // Padding general
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, LoginActivity::class.java))
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(text = "Iniciar Sesión")
+                }
 
-        Button(
-            onClick = {
-                context.startActivity(Intent(context, RegisterActivity::class.java))
-            },
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(text = "Registrar")
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, RegisterActivity::class.java))
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(text = "Registrar")
+                }
+            }
         }
-    }
+    )
 }
 
 @Preview(showBackground = true)
@@ -79,4 +92,5 @@ fun PreviewLoginRegisterScreen() {
         LoginRegisterScreen()
     }
 }
+
 

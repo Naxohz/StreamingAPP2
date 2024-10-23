@@ -8,16 +8,26 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +47,6 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     var showSportsDialog by remember { mutableStateOf(false) }
     var showNewsDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var showAccountMenu by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val sportsCategories = listOf("Fútbol", "Atletismo", "Basketball", "Handball", "Tenis")
@@ -48,8 +57,8 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
             TopAppBar(
                 title = { Text("Bienvenidos a la Aplicación Regional") },
                 actions = {
-                    IconButton(onClick = { showAccountMenu = !showAccountMenu }) {
-                        Icon(Icons.Filled.Person, contentDescription = "Menú de cuenta")
+                    IconButton(onClick = { showLogoutDialog = true }) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
                     }
                 }
             )
@@ -102,31 +111,6 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
             }
         )
     }
-
-    if (showAccountMenu) {
-        // Mostrar un menú de cuenta básico directamente en el HomeScreen
-        AlertDialog(
-            onDismissRequest = { showAccountMenu = false },
-            title = { Text("Menú de Cuenta") },
-            text = {
-                Column {
-                    TextButton(onClick = {
-                        context.startActivity(Intent(context, AccountDetailsActivity::class.java))
-                        showAccountMenu = false
-                    }) {
-                        Text("Detalles de la cuenta")
-                    }
-                    TextButton(onClick = {
-                        showLogoutDialog = true
-                        showAccountMenu = false
-                    }) {
-                        Text("Cerrar sesión")
-                    }
-                }
-            },
-            confirmButton = {}
-        )
-    }
 }
 
 @Composable
@@ -174,7 +158,7 @@ fun LogoutDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     )
 }
 
-fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
+private fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
     val sharedPref = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
     with(sharedPref.edit()) {
         putBoolean("isLoggedIn", isLoggedIn)
@@ -185,5 +169,7 @@ fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen { category -> }
+    HomeScreen { category ->
+    }
 }
+

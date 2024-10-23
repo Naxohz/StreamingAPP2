@@ -7,7 +7,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
@@ -15,9 +19,11 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,11 +69,25 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { showSportsDialog = true }) {
+
+                // Botones para mostrar categorías
+                Button(
+                    onClick = { showSportsDialog = true },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(200.dp, 50.dp) // Ajusta el tamaño del botón
+                ) {
                     Text("Deportes")
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { showNewsDialog = true }) {
+
+                Button(
+                    onClick = { showNewsDialog = true },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(200.dp, 50.dp) // Ajusta el tamaño del botón
+                ) {
                     Text("Noticias")
                 }
             }
@@ -96,7 +116,6 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
         LogoutDialog(
             onDismiss = { showLogoutDialog = false },
             onConfirm = {
-                // Cerrar sesión y redirigir al MainActivity
                 setLoggedIn(context, false)
                 context.startActivity(Intent(context, MainActivity::class.java))
             }
@@ -104,7 +123,6 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     }
 
     if (showAccountMenu) {
-        // Mostrar un menú de cuenta básico directamente en el HomeScreen
         AlertDialog(
             onDismissRequest = { showAccountMenu = false },
             title = { Text("Menú de Cuenta") },
@@ -140,19 +158,36 @@ fun CategoryDialog(
         onDismissRequest = { onDismiss() },
         title = { Text(text = title) },
         text = {
-            Column {
-                categories.forEach { category ->
-                    TextButton(onClick = {
+            LazyColumn {
+                items(categories) { category ->
+                    CategoryCard(category = category, onClick = {
                         onCategorySelected(category)
                         onDismiss()
-                    }) {
-                        Text(text = category)
-                    }
+                    })
                 }
             }
         },
         confirmButton = {}
     )
+}
+
+@Composable
+fun CategoryCard(category: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF3B334D))
+    ) {
+        Box(
+            modifier = Modifier.padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = category, color = Color.White)
+        }
+    }
 }
 
 @Composable
@@ -187,4 +222,5 @@ fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
 fun PreviewHomeScreen() {
     HomeScreen { category -> }
 }
+
 

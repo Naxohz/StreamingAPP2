@@ -47,14 +47,7 @@ fun LoginRegisterScreen() {
     val context = LocalContext.current
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Bienvenidos a Streaming Regional", color = Color.White) },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = Color(0xFF202165)
-                )
-            )
-        },
+
         content = { padding ->
             Box(
                 modifier = Modifier
@@ -66,9 +59,17 @@ fun LoginRegisterScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp), // Padding general
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.Center, // Cambiado a 'Top' para alinear elementos desde la parte superior
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Título centrado en la parte superior
+                    Text(
+                        text = "Bienvenidos a Streaming Regional",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 32.dp) // Espaciado abajo para separar del botón
+                    )
+
                     Button(
                         onClick = {
                             context.startActivity(Intent(context, LoginActivity::class.java))

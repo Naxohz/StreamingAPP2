@@ -11,12 +11,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.streamingapp.data.UserDatabase
+import com.example.streamingapp.data.UserEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var etLocation: EditText  // Declarar el campo de texto para la ubicación
+    private lateinit var etLocation: EditText  // Campo de texto para la ubicación
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +38,6 @@ class RegisterActivity : AppCompatActivity() {
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val btnLocation = findViewById<Button>(R.id.btnLocation)
 
-        // Inicializar el campo de texto de la ubicación
         etLocation = findViewById(R.id.etLocation)
 
         btnLocation.setOnClickListener { requestLocationPermission() }
@@ -69,11 +73,19 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun registerUser(name: String, lastName: String, username: String, email: String, password: String) {
-        // Lógica para registrar al usuario
-        Toast.makeText(this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
-        setLoggedIn(true)
-        startActivity(Intent(this, HomeActivity::class.java))
-        finish()
+        val user = UserEntity(name = name, lastName = lastName, username = username, email = email, password = password, location = etLocation.text.toString())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val db = UserDatabase.getDatabase(this@RegisterActivity)
+            db.userDao().insertUser(user)
+
+            runOnUiThread {
+                Toast.makeText(this@RegisterActivity, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
+                setLoggedIn(true)
+                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java)) // Redirige a la actividad de inicio de sesión
+                finish()
+            }
+        }
     }
 
     private fun requestLocationPermission() {
@@ -92,7 +104,6 @@ class RegisterActivity : AppCompatActivity() {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        // Obtener latitud y longitud y mostrarla en el EditText
                         val locationText = "Latitud: ${location.latitude}, Longitud: ${location.longitude}"
                         etLocation.setText(locationText)
                         Toast.makeText(this, "Ubicación obtenida", Toast.LENGTH_SHORT).show()

@@ -1,51 +1,56 @@
 package com.example.streamingapp
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.streamingapp.data.UserDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
-
-    private lateinit var usernameEditText: EditText
-    private lateinit var passwordEditText: EditText
+    private lateinit var etUsername: EditText
+    private lateinit var etPassword: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Inicializar los campos de entrada
-        usernameEditText = findViewById(R.id.etUsername)
-        passwordEditText = findViewById(R.id.etPassword)
+        etUsername = findViewById(R.id.etUsername)
+        etPassword = findViewById(R.id.etPassword)
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
 
-        // Configurar el botón de inicio de sesión
-        val loginButton: Button = findViewById(R.id.btnLogin)
-        loginButton.setOnClickListener {
-            val username = usernameEditText.text.toString()
-            val password = passwordEditText.text.toString()
-            if (validateCredentials(username, password)) {
-                setLoggedIn(true)
-                startActivity(Intent(this, HomeActivity::class.java))
-                finish()
+        btnLogin.setOnClickListener {
+            val username = etUsername.text.toString()
+            val password = etPassword.text.toString()
+
+            if (username.isNotEmpty() && password.isNotEmpty()) {
+                loginUser(username, password)
             } else {
-                Toast.makeText(this, "Credenciales inválidas", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun validateCredentials(username: String, password: String): Boolean {
-        // Aquí deberías implementar la validación real contra una base de datos o API
-        return username == "user" && password == "pass"
-    }
+    private fun loginUser(username: String, password: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val db = UserDatabase.getDatabase(this@LoginActivity)
+            val user = db.userDao().getUserByUsernameAndPassword(username, password)
 
-    private fun setLoggedIn(isLoggedIn: Boolean) {
-        val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putBoolean("isLoggedIn", isLoggedIn)
-            apply()
+            if (user != null) {
+                runOnUiThread {
+                    Toast.makeText(this@LoginActivity, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                    finish()
+                }
+            } else {
+                runOnUiThread {
+                    Toast.makeText(this@LoginActivity, "Nombre de usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

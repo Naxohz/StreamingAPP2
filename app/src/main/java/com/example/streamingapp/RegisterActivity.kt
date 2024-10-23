@@ -1,128 +1,63 @@
 package com.example.streamingapp
 
-import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import kotlinx.coroutines.launch
 
-class RegisterActivity : AppCompatActivity() {
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var etLocation: EditText  // Declarar el campo de texto para la ubicación
+class RegisterActivity : ComponentActivity() {
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        db = AppDatabase.getDatabase(this)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        val etName = findViewById<EditText>(R.id.etName)
-        val etLastName = findViewById<EditText>(R.id.etLastName)
-        val etUsername = findViewById<EditText>(R.id.etUsername)
-        val etEmail = findViewById<EditText>(R.id.etEmail)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val etConfirmPassword = findViewById<EditText>(R.id.etConfirmPassword)
-        val btnRegister = findViewById<Button>(R.id.btnRegister)
-        val btnLocation = findViewById<Button>(R.id.btnLocation)
-
-        // Inicializar el campo de texto de la ubicación
-        etLocation = findViewById(R.id.etLocation)
-
-        btnLocation.setOnClickListener { requestLocationPermission() }
-
-        btnRegister.setOnClickListener {
-            val name = etName.text.toString()
-            val lastName = etLastName.text.toString()
-            val username = etUsername.text.toString()
-            val email = etEmail.text.toString()
-            val password = etPassword.text.toString()
-            val confirmPassword = etConfirmPassword.text.toString()
-
-            if (validateFields(name, lastName, username, email, password, confirmPassword)) {
-                registerUser(name, lastName, username, email, password)
-            }
+        setContent {
+            RegisterScreen()
         }
     }
 
-    private fun validateFields(name: String, lastName: String, username: String, email: String, password: String, confirmPassword: String): Boolean {
-        if (name.isEmpty() || lastName.isEmpty() || username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        if (password != confirmPassword) {
-            Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Email inválido", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        return true
-    }
+    @Composable
+    fun RegisterScreen() {
+        val username = remember { mutableStateOf("") }
+        val password = remember { mutableStateOf("") }
+        val coroutineScope = rememberCoroutineScope()
 
-    private fun registerUser(name: String, lastName: String, username: String, email: String, password: String) {
-        // Lógica para registrar al usuario
-        Toast.makeText(this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
-        setLoggedIn(true)
-        startActivity(Intent(this, HomeActivity::class.java))
-        finish()
-    }
-
-    private fun requestLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE)
-        } else {
-            getLocation()
-        }
-    }
-
-    private fun getLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        // Obtener latitud y longitud y mostrarla en el EditText
-                        val locationText = "Latitud: ${location.latitude}, Longitud: ${location.longitude}"
-                        etLocation.setText(locationText)
-                        Toast.makeText(this, "Ubicación obtenida", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
-                    }
+        Column {
+            TextField(
+                value = username.value,
+                onValueChange = { username.value = it },
+                label = { Text("Usuario") }
+            )
+            TextField(
+                value = password.value,
+                onValueChange = { password.value = it },
+                label = { Text("Contraseña") },
+                visualTransformation = PasswordVisualTransformation()
+            )
+            Button(onClick = {
+                coroutineScope.launch {
+                    db.userDao().insert(User(username = username.value, password = password.value))
                 }
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLocation()
-            } else {
-                Toast.makeText(this, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show()
+            }) {
+                Text("Registrar")
             }
         }
     }
 
-    private fun setLoggedIn(isLoggedIn: Boolean) {
-        val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putBoolean("isLoggedIn", isLoggedIn)
-            apply()
-        }
-    }
-
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    @Preview(showBackground = true)
+    @Composable
+    fun PreviewRegisterScreen() {
+        RegisterScreen()
     }
 }
+
+

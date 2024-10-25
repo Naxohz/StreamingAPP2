@@ -71,6 +71,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation ("com.google.android.gms:play-services-location:20.0.0")
     // ROOM Dependencies
     implementation("androidx.room:room-runtime:$room_version")
     //kapt("androidx.room:room-compiler:$room_version")

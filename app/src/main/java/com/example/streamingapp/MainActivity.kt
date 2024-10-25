@@ -13,20 +13,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.streamingapp.ui.theme.StreamingAPPTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
+        super.onCreate(savedInstanceState) // Asegúrate de que esto esté aquí
 
         if (isLoggedIn()) {
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         } else {
-
             setContent {
                 StreamingAPPTheme {
                     LoginRegisterScreen()
@@ -45,57 +44,53 @@ class MainActivity : ComponentActivity() {
 fun LoginRegisterScreen() {
     val context = LocalContext.current
 
-    Scaffold(
-
-        content = { padding ->
-            Box(
+    Scaffold { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF111A22)) // Color de fondo
+                .padding(padding)
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF202165))
-                    .padding(padding)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
+                Text(
+                    text = "Bienvenidos a Streaming Regional",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(vertical = 24.dp)
+                )
+
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, LoginActivity::class.java))
+                    },
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF243647))
                 ) {
+                    Text(text = "Inicio de sesión", color = Color.White)
+                }
 
-                    Text(
-                        text = "Bienvenidos a Streaming Regional",
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 32.dp)
-                    )
-
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, LoginActivity::class.java))
-                        },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3F51B5))
-                    ) {
-                        Text(text = "Iniciar Sesión")
-                    }
-
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, RegisterActivity::class.java))
-                        },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3F51B5))
-                    ) {
-                        Text(text = "Registrar")
-                    }
+                Button(
+                    onClick = {
+                        context.startActivity(Intent(context, RegisterActivity::class.java))
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1980E6))
+                ) {
+                    Text(text = "Registrarte", color = Color.White)
                 }
             }
         }
-    )
+    }
 }
 
 @Preview(showBackground = true)
@@ -105,5 +100,7 @@ fun PreviewLoginRegisterScreen() {
         LoginRegisterScreen()
     }
 }
+
+
 
 

@@ -20,14 +20,14 @@ class AccountDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AccountDetailsScreen(username = "your_username") // Cambia esto según tu lógica
+            AccountDetailsScreen(username = "your_username")
         }
     }
 
     @Composable
     fun AccountDetailsScreen(username: String) {
         var user by remember { mutableStateOf<UserEntity?>(null) }
-        val password = "your_password" // Obtén la contraseña de manera segura según tu lógica
+        val password = "your_password"
 
         LaunchedEffect(username) {
             userViewModel.getUserByUsernameAndPassword(username, password) { result ->

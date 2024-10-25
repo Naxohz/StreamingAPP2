@@ -21,12 +21,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Verificar si el usuario está logueado
+
         if (isLoggedIn()) {
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         } else {
-            // Si no está logueado, mostrar la pantalla de inicio de sesión y registro
+
             setContent {
                 StreamingAPPTheme {
                     LoginRegisterScreen()
@@ -41,7 +41,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginRegisterScreen() {
     val context = LocalContext.current
@@ -58,16 +57,16 @@ fun LoginRegisterScreen() {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp), // Padding general
-                    verticalArrangement = Arrangement.Center, // Cambiado a 'Top' para alinear elementos desde la parte superior
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Título centrado en la parte superior
+
                     Text(
                         text = "Bienvenidos a Streaming Regional",
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 32.dp) // Espaciado abajo para separar del botón
+                        modifier = Modifier.padding(bottom = 32.dp)
                     )
 
                     Button(

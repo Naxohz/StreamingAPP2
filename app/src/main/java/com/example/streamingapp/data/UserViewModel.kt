@@ -18,8 +18,6 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             repository.insertUser(user)
         }
     }
-
-    // Cambiar este método para que no sea suspendido y para actualizar el estado de la UI
     fun getUserByUsernameAndPassword(username: String, password: String, onResult: (UserEntity?) -> Unit) {
         viewModelScope.launch {
             val user = repository.getUserByUsernameAndPassword(username, password)

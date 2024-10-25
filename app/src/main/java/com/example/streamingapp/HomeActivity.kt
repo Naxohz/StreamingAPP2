@@ -86,7 +86,7 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
                     onClick = { showNewsDialog = true },
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(200.dp, 50.dp) // Ajusta el tamaño del botón
+                        .size(200.dp, 50.dp)
                 ) {
                     Text("Noticias")
                 }

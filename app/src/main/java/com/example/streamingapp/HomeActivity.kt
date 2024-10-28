@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
+import androidx.compose.ui.unit.sp
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,10 +52,11 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bienvenidos a la Aplicación Regional") },
+                title = { Text("Bienvenidos a la Aplicación Regional", color = Color.White, fontSize = 20.sp) },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFF111A22)),
                 actions = {
                     IconButton(onClick = { showAccountMenu = !showAccountMenu }) {
-                        Icon(Icons.Filled.Person, contentDescription = "Menú de cuenta")
+                        Icon(Icons.Filled.Person, contentDescription = "Menú de cuenta", tint = Color.White)
                     }
                 }
             )
@@ -64,20 +65,22 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color(0xFF111A22))
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botones para mostrar categorías
+                // Botones para mostrar categorías con estilo
                 Button(
                     onClick = { showSportsDialog = true },
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(200.dp, 50.dp) // Ajusta el tamaño del botón
+                        .size(200.dp, 50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF243647))
                 ) {
-                    Text("Deportes")
+                    Text("Deportes", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -86,9 +89,10 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
                     onClick = { showNewsDialog = true },
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(200.dp, 50.dp)
+                        .size(200.dp, 50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF243647))
                 ) {
-                    Text("Noticias")
+                    Text("Noticias", color = Color.White)
                 }
             }
         }
@@ -125,20 +129,20 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     if (showAccountMenu) {
         AlertDialog(
             onDismissRequest = { showAccountMenu = false },
-            title = { Text("Menú de Cuenta") },
+            title = { Text("Menú de Cuenta", color = Color.White) },
             text = {
                 Column {
                     TextButton(onClick = {
                         context.startActivity(Intent(context, AccountDetailsActivity::class.java))
                         showAccountMenu = false
                     }) {
-                        Text("Detalles de la cuenta")
+                        Text("Detalles de la cuenta", color = Color.White)
                     }
                     TextButton(onClick = {
                         showLogoutDialog = true
                         showAccountMenu = false
                     }) {
-                        Text("Cerrar sesión")
+                        Text("Cerrar sesión", color = Color.White)
                     }
                 }
             },
@@ -156,7 +160,7 @@ fun CategoryDialog(
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        title = { Text(text = title) },
+        title = { Text(text = title, color = Color.White) },
         text = {
             LazyColumn {
                 items(categories) { category ->
@@ -194,18 +198,19 @@ fun CategoryCard(category: String, onClick: () -> Unit) {
 fun LogoutDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        title = { Text(text = "Cerrar Sesión") },
-        text = { Text("¿Quieres cerrar sesión?") },
+        title = { Text(text = "Cerrar Sesión", color = Color.White) },
+        text = { Text("¿Quieres cerrar sesión?", color = Color.White) },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
-                Text("Sí")
+                Text("Sí", color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("No")
+                Text("No", color = Color.White)
             }
-        }
+        },
+        containerColor = Color(0xFF111A22)
     )
 }
 
@@ -222,5 +227,3 @@ fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
 fun PreviewHomeScreen() {
     HomeScreen { category -> }
 }
-
-

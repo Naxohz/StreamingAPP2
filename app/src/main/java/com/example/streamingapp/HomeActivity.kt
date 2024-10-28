@@ -72,7 +72,6 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botones para mostrar categorías con estilo
                 Button(
                     onClick = { showSportsDialog = true },
                     modifier = Modifier

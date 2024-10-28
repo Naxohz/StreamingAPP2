@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.streamingapp.data.UserViewModel
 
 class LoginActivity : ComponentActivity() {
-    private val userViewModel: UserViewModel by viewModels() // Usando ViewModelProvider
+    private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +41,6 @@ class LoginActivity : ComponentActivity() {
         val username = remember { mutableStateOf("") }
         val password = remember { mutableStateOf("") }
 
-        // Establecer el fondo del diseño
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,11 +54,10 @@ class LoginActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Texto del encabezado con el color blanco
                 Text(
                     text = "Iniciar Sesión",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White // Color de texto igual que en RegisterActivity
+                    color = Color.White
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -67,7 +65,7 @@ class LoginActivity : ComponentActivity() {
                 OutlinedTextField(
                     value = username.value,
                     onValueChange = { username.value = it },
-                    label = { Text("Nombre de usuario", color = Color.White) }, // Color de texto en la etiqueta
+                    label = { Text("Nombre de usuario", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(color = Color.White),
                     singleLine = true,
@@ -77,15 +75,14 @@ class LoginActivity : ComponentActivity() {
                     keyboardActions = KeyboardActions(
                         onNext = {}
                     )
-                    )
-
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = password.value,
                     onValueChange = { password.value = it },
-                    label = { Text("Contraseña", color = Color.White) }, // Color de texto en la etiqueta
+                    label = { Text("Contraseña", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(color = Color.White),
                     visualTransformation = PasswordVisualTransformation(),
@@ -111,7 +108,7 @@ class LoginActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF243647))
                 ) {
-                    Text(text = "Iniciar Sesión", color = Color.White) // Color de texto del botón
+                    Text(text = "Iniciar Sesión", color = Color.White)
                 }
             }
         }
@@ -123,6 +120,7 @@ class LoginActivity : ComponentActivity() {
                 runOnUiThread {
                     Toast.makeText(this@LoginActivity, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
                     setLoggedIn(true)
+                    saveUserCredentials(username, password)
                     startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                     finish()
                 }
@@ -138,6 +136,16 @@ class LoginActivity : ComponentActivity() {
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putBoolean("isLoggedIn", isLoggedIn)
+            apply()
+        }
+    }
+
+    // Nueva función para guardar las credenciales del usuario
+    private fun saveUserCredentials(username: String, password: String) {
+        val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("logged_in_username", username)
+            putString("logged_in_password", password)
             apply()
         }
     }

@@ -82,6 +82,7 @@ class RegisterActivity : ComponentActivity() {
                     label = { Text("Nombre", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.White),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next
                     ),
@@ -96,6 +97,7 @@ class RegisterActivity : ComponentActivity() {
                     label = { Text("Apellido", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.White),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next
                     ),
@@ -110,6 +112,7 @@ class RegisterActivity : ComponentActivity() {
                     label = { Text("Nombre de usuario", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.White),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next
                     ),
@@ -124,6 +127,7 @@ class RegisterActivity : ComponentActivity() {
                     label = { Text("Email", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.White),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next
                     ),
@@ -138,6 +142,7 @@ class RegisterActivity : ComponentActivity() {
                     label = { Text("Contraseña", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.White),
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Next
@@ -153,6 +158,7 @@ class RegisterActivity : ComponentActivity() {
                     label = { Text("Confirmar Contraseña", color = Color.White) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.White),
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done
@@ -167,7 +173,7 @@ class RegisterActivity : ComponentActivity() {
                 )
                 OutlinedTextField(
                     value = location,
-                    onValueChange = {}, // No se puede cambiar el valor
+                    onValueChange = {},
                     label = { Text("Ubicación", color = Color.White) },
                     textStyle = TextStyle(color = Color.White),
                     modifier = Modifier.fillMaxWidth(),
@@ -291,8 +297,7 @@ class RegisterActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun PreviewRegisterScreen() {
-        RegisterScreen()
-    }
+        RegisterScreen() }
 }
 
 

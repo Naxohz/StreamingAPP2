@@ -239,7 +239,7 @@ class RegisterActivity : ComponentActivity() {
             runOnUiThread {
                 Toast.makeText(this@RegisterActivity, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
                 setLoggedIn(true)
-                startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
+                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
                 finish()
             }
         }

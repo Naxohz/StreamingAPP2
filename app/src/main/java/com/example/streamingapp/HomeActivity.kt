@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -52,7 +51,7 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bienvenidos a la Aplicación Regional", color = Color.White, fontSize = 20.sp) },
+                title = { Text("Selecciona alguna categoría", color = Color.White, fontSize = 20.sp) },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFF111A22)),
                 actions = {
                     IconButton(onClick = { showAccountMenu = !showAccountMenu }) {
@@ -102,7 +101,8 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
             title = "Deportes en la región",
             categories = sportsCategories,
             onDismiss = { showSportsDialog = false },
-            onCategorySelected = onCategorySelected
+            onCategorySelected = onCategorySelected,
+
         )
     }
 
@@ -145,7 +145,8 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
                     }
                 }
             },
-            confirmButton = {}
+            confirmButton = {},
+            containerColor = Color(0xFF111A22)
         )
     }
 }
@@ -170,7 +171,8 @@ fun CategoryDialog(
                 }
             }
         },
-        confirmButton = {}
+        confirmButton = {},
+        containerColor = Color(0xFF111A22)
     )
 }
 

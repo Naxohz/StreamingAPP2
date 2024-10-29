@@ -73,12 +73,14 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
                     .padding(16.dp)
             ) {
                 categories.forEach { category ->
+                    Spacer(modifier = Modifier.height(48.dp))
+
                     Text(
                         text = category.title,
                         color = Color.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 16.dp)
                     )
                     LazyRow(
                         modifier = Modifier.padding(bottom = 16.dp),
@@ -111,6 +113,7 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
         )
     }
 }
+
 
 @Composable
 fun ChannelCard(channelName: String, onClick: () -> Unit) {

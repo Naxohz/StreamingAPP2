@@ -1,17 +1,13 @@
 package com.example.streamingapp
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
@@ -22,29 +18,47 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.streamingapp.ui.theme.*
-import com.example.streamingapp.R
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
+data class Category(val title: String, val items: List<String>)
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreen { category ->
-                Toast.makeText(this, "Seleccionaste: $category", Toast.LENGTH_SHORT).show()
+            val navController = rememberNavController()
+            AppNavHost(navController)
+        }
+    }
+}
+
+@Composable
+fun AppNavHost(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            HomeScreen { category, subCategory ->
+                navController.navigate("details/$category/$subCategory")
             }
+        }
+        composable("details/{category}/{subCategory}") { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category") ?: "Sin categoría"
+            val subCategory = backStackEntry.arguments?.getString("subCategory") ?: "Sin subcategoría"
+            CategoryDetailsScreen(navController, category, subCategory)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(onCategorySelected: (String) -> Unit) {
+fun HomeScreen(onCategorySelected: (String, String) -> Unit) {
     var showAccountMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     val categories = listOf(
@@ -56,7 +70,14 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Selecciona alguna categoría", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        "Selecciona alguna categoría",
+                        color = Color.White,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFF264653)),
                 actions = {
                     IconButton(onClick = { showAccountMenu = !showAccountMenu }) {
@@ -65,29 +86,29 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
                 }
             )
         },
-        content = {
+        content = { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0xFF101A23))
-                    .padding(16.dp)
+                    .padding(paddingValues)
             ) {
                 categories.forEach { category ->
-                    Spacer(modifier = Modifier.height(48.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
                         text = category.title,
                         color = Color.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                     )
                     LazyRow(
-                        modifier = Modifier.padding(bottom = 16.dp),
+                        modifier = Modifier.padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(category.items) { item ->
-                            ChannelCard(item, onClick = { onCategorySelected(item) })
+                            ChannelCard(item, onClick = { onCategorySelected(category.title, item) })
                         }
                     }
                 }
@@ -114,7 +135,6 @@ fun HomeScreen(onCategorySelected: (String) -> Unit) {
     }
 }
 
-
 @Composable
 fun ChannelCard(channelName: String, onClick: () -> Unit) {
     Card(
@@ -126,7 +146,7 @@ fun ChannelCard(channelName: String, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .height(120.dp)
-                .background(Color.Gray), // Placeholder for image
+                .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -149,12 +169,7 @@ fun ChannelCard(channelName: String, onClick: () -> Unit) {
 
 @Composable
 fun AccountMenuDialog(onDismiss: () -> Unit, onLogoutRequest: () -> Unit) {
-    @Composable
-    fun rememberLocalContext(): Context {
-        return LocalContext.current
-    }
-
-    val context = rememberLocalContext()
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -170,7 +185,6 @@ fun AccountMenuDialog(onDismiss: () -> Unit, onLogoutRequest: () -> Unit) {
                     Text("Detalles de la cuenta", color = Color.White)
                 }
                 TextButton(onClick = {
-                    // Solicitar cierre de sesión
                     onLogoutRequest()
                     onDismiss()
                 }) {
@@ -214,7 +228,5 @@ fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen { category -> }
+    HomeScreen { _, _ -> }
 }
-
-data class Category(val title: String, val items: List<String>)

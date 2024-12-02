@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,19 +19,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-data class Category(val title: String, val items: List<String>)
-
 class HomeActivity : ComponentActivity() {
+    private val firestoreRepository = FirestoreRepository()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -44,9 +46,7 @@ class HomeActivity : ComponentActivity() {
 fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            HomeScreen { category, subCategory ->
-                navController.navigate("details/$category/$subCategory")
-            }
+            HomeScreen(navController)
         }
         composable("details/{category}/{subCategory}") { backStackEntry ->
             val category = backStackEntry.arguments?.getString("category") ?: "Sin categoría"
@@ -58,14 +58,17 @@ fun AppNavHost(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onCategorySelected: (String, String) -> Unit) {
+fun HomeScreen(navController: NavController) {
+    val firestoreRepository = FirestoreRepository()
+    val categoriesState = remember { mutableStateOf<List<Category>>(emptyList()) }
+
+    // Cargar categorías desde Firestore
+    LaunchedEffect(true) {
+        categoriesState.value = firestoreRepository.getCategories()
+    }
+
     var showAccountMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
-    val categories = listOf(
-        Category("Deportes", listOf("Fútbol", "Atletismo", "Basketball", "Handball", "Tenis")),
-        Category("Noticias", listOf("Política", "Economía", "Cultura", "Tecnología")),
-        Category("Entretenimiento", listOf("Música", "Películas", "Series"))
-    )
 
     Scaffold(
         topBar = {
@@ -93,9 +96,9 @@ fun HomeScreen(onCategorySelected: (String, String) -> Unit) {
                     .background(Color(0xFF101A23))
                     .padding(paddingValues)
             ) {
-                categories.forEach { category ->
+                // Recorrer las categorías
+                categoriesState.value.forEach { category ->
                     Spacer(modifier = Modifier.height(24.dp))
-
                     Text(
                         text = category.title,
                         color = Color.White,
@@ -107,8 +110,13 @@ fun HomeScreen(onCategorySelected: (String, String) -> Unit) {
                         modifier = Modifier.padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(category.items) { item ->
-                            ChannelCard(item, onClick = { onCategorySelected(category.title, item) })
+                        items(category.items.zip(category.icons)) { (item, iconName) ->
+                            val iconResId = getDrawableResourceId(iconName)
+                            ChannelCard(
+                                channelName = item,
+                                imageRes = iconResId,
+                                onClick = { navController.navigate("details/${category.title}/$item") }
+                            )
                         }
                     }
                 }
@@ -136,7 +144,7 @@ fun HomeScreen(onCategorySelected: (String, String) -> Unit) {
 }
 
 @Composable
-fun ChannelCard(channelName: String, onClick: () -> Unit) {
+fun ChannelCard(channelName: String, imageRes: Int, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .width(150.dp)
@@ -149,9 +157,10 @@ fun ChannelCard(channelName: String, onClick: () -> Unit) {
                 .background(Color.Gray),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Imagen",
-                color = Color.White
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = "Icono de $channelName",
+                modifier = Modifier.fillMaxSize()
             )
         }
         Box(
@@ -165,6 +174,12 @@ fun ChannelCard(channelName: String, onClick: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun getDrawableResourceId(iconName: String): Int {
+    val context = LocalContext.current
+    return context.resources.getIdentifier(iconName, "drawable", context.packageName).takeIf { it != 0 } ?: 0
 }
 
 @Composable
@@ -217,7 +232,8 @@ fun LogoutDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
     )
 }
 
-fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
+fun setLoggedIn(context: Context, isLoggedIn: Boolean)
+{
     val sharedPref = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
     with(sharedPref.edit()) {
         putBoolean("isLoggedIn", isLoggedIn)
@@ -227,6 +243,100 @@ fun setLoggedIn(context: Context, isLoggedIn: Boolean) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewHomeScreen() {
-    HomeScreen { _, _ -> }
+fun HomeScreenPreview() {
+    // Simular los datos que obtendrás de Firestore
+    val categoriesState = listOf(
+        Category(
+            title = "Deportes",
+            items = listOf("Fútbol", "Baloncesto", "Tenis"),
+            icons = listOf("futbol_icon", "basketball_icon", "tenis_icon")
+        ),
+        Category(
+            title = "Noticias",
+            items = listOf("Política", "Cultura", "Economía"),
+            icons = listOf("politica_icon", "cultura_icon", "economia_icon")
+        ),
+        Category(
+            title = "Entretenimiento",
+            items = listOf("Películas", "Series", "Música"),
+            icons = listOf("peliculas_icon", "series_icon", "musica_icon")
+        )
+    )
+
+    // Simulamos la carga de categorías
+    HomeScreenPreviewContent(categoriesState)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenPreviewContent(categoriesState: List<Category>) {
+    var showAccountMenu by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Selecciona alguna categoría",
+                        color = Color.White,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color(0xFF264653)),
+                actions = {
+                    IconButton(onClick = { showAccountMenu = !showAccountMenu }) {
+                        Icon(Icons.Filled.Person, contentDescription = "Menú de cuenta", tint = Color.White)
+                    }
+                }
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF101A23))
+                    .padding(paddingValues)
+            ) {
+                categoriesState.forEach { category ->
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = category.title,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                    )
+                    LazyRow(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(category.items.zip(category.icons)) { (item, iconName) ->
+                            val iconResId = getDrawableResourceId(iconName)
+                            ChannelCard(
+                                channelName = item,
+                                imageRes = iconResId,
+                                onClick = { /* Simula la navegación */ }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    )
+
+    if (showAccountMenu) {
+        AccountMenuDialog(
+            onDismiss = { showAccountMenu = false },
+            onLogoutRequest = { showLogoutDialog = true }
+        )
+    }
+
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = { /* Simula el cierre de sesión */ }
+        )
+    }
 }

@@ -83,7 +83,3 @@ fun PreviewCategoryDetailsScreen() {
         subCategory = "Fútbol"
     )
 }
-
-
-
-

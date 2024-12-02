@@ -60,7 +60,7 @@ fun LoginRegisterScreen() {
             ) {
                 // Colocar la imagen
                 Image(
-                    painter = painterResource(id = R.drawable.screenshot_1),
+                    painter = painterResource(id = R.drawable.inicio_icono),
                     contentDescription = "Imagen de fondo",
                     modifier = Modifier
                         .fillMaxWidth()

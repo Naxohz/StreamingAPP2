@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "245680603049",
+    "firebase_url": "https://categorias-steamingapp-default-rtdb.firebaseio.com",
+    "project_id": "categorias-steamingapp",
+    "storage_bucket": "categorias-steamingapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245680603049:android:6384fafe26458239300eb8",
+        "android_client_info": {
+          "package_name": "com.example.streamingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTPxQd1KdSf9ZsuxkK4L2R19pOd_z2fuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
